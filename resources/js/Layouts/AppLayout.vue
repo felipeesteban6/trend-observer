@@ -6,10 +6,12 @@ import { Link } from '@inertiajs/vue3'
   <div class="min-h-screen bg-slate-50 text-slate-900">
     <nav class="border-b border-slate-200 bg-white">
       <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" class="font-semibold text-slate-800">Observador de Tendencias</Link>
-        <div class="flex gap-4 text-sm text-slate-600">
-          <Link href="/" class="hover:text-slate-900">Ranking</Link>
+        <Link href="/dashboard" class="font-semibold text-slate-800">Observador de Tendencias</Link>
+        <div class="flex items-center gap-4 text-sm text-slate-600">
+          <Link href="/dashboard" class="hover:text-slate-900">Ranking</Link>
           <Link href="/keywords" class="hover:text-slate-900">Keywords</Link>
+          <Link href="/profile" class="hover:text-slate-900">Perfil</Link>
+          <Link href="/logout" method="post" as="button" class="hover:text-slate-900">Salir</Link>
         </div>
       </div>
     </nav>
