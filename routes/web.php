@@ -4,8 +4,30 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchKeywordController;
+use App\Http\Controllers\Shop\CartController;
+use App\Http\Controllers\Shop\CatalogController;
+use App\Http\Controllers\Shop\CheckoutController;
+use App\Http\Controllers\Webhooks\MercadoPagoWebhookController;
 use Illuminate\Support\Facades\Route;
 
+// Catálogo público — sin login, es la tienda de cara al cliente.
+Route::prefix('tienda')->name('shop.')->group(function () {
+    Route::get('/', [CatalogController::class, 'index'])->name('index');
+    Route::get('/producto/{product:slug}', [CatalogController::class, 'show'])->name('show');
+
+    Route::get('/carrito', [CartController::class, 'index'])->name('cart');
+    Route::post('/carrito', [CartController::class, 'store'])->name('cart.store');
+    Route::patch('/carrito/{product}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/carrito/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
+
+    Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/pedido/{order:order_number}', [CheckoutController::class, 'confirmation'])->name('order.confirmation');
+});
+
+Route::post('/webhooks/mercadopago', [MercadoPagoWebhookController::class, 'handle'])->name('webhooks.mercadopago');
+
+// Panel del observador de tendencias — requiere login.
 Route::get('/', [AuthenticatedSessionController::class, 'create'])
     ->middleware('guest')
     ->name('home');

@@ -17,7 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        //
+        // Mercado Pago llama a este endpoint directo, sin token CSRF de nuestra sesión.
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/mercadopago',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

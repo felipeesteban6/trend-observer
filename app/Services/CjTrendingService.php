@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services\Concerns\AuthenticatesWithCj;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Log;
@@ -14,8 +15,9 @@ use Illuminate\Support\Facades\Log;
  */
 class CjTrendingService
 {
+    use AuthenticatesWithCj;
+
     private Client $client;
-    private ?string $accessToken = null;
 
     public function __construct()
     {
@@ -23,30 +25,6 @@ class CjTrendingService
             'base_uri' => config('services.cj_dropshipping.base_uri', 'https://developers.cjdropshipping.com/api2.0/v1/'),
             'timeout' => 20,
         ]);
-    }
-
-    private function authenticate(): ?string
-    {
-        if ($this->accessToken) {
-            return $this->accessToken;
-        }
-
-        try {
-            $response = $this->client->post('authentication/getAccessToken', [
-                'json' => [
-                    'email' => config('services.cj_dropshipping.email'),
-                    'password' => config('services.cj_dropshipping.api_key'),
-                ],
-            ]);
-
-            $data = json_decode((string) $response->getBody(), true);
-            $this->accessToken = $data['data']['accessToken'] ?? null;
-
-            return $this->accessToken;
-        } catch (GuzzleException $e) {
-            Log::warning("CJ Trending: fallo de autenticación: {$e->getMessage()}");
-            return null;
-        }
     }
 
     /**
@@ -59,7 +37,7 @@ class CjTrendingService
      */
     public function fetchTrending(int $limit = 50): array
     {
-        $token = $this->authenticate();
+        $token = $this->authenticate($this->client);
 
         if (! $token) {
             return [];
